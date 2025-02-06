@@ -27,7 +27,7 @@
                             <button type="submit" class="btn btn-primary w-100">Login</button>
                         </form>
                         <p class="text-center mt-3">
-                            Don't have an account? <a href="/signup.html">Sign up here</a>
+                            Don't have an account? <a href="D:/GBC/S6/3133-FullStack/101451857_lab_test1_chat_app/pages/signup.html">Sign up here</a>
                         </p>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
             };
 
             try {
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch('http://localhost:3000/api/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -57,7 +57,7 @@
                 if (response.ok) {
                     const userData = await response.json();
                     localStorage.setItem('user', JSON.stringify(userData));
-                    window.location.href = '/chat.html';
+                    window.location.href = 'D:/GBC/S6/3133-FullStack/101451857_lab_test1_chat_app/pages/chat.html';
                 } else {
                     const error = await response.json();
                     alert(error.message);

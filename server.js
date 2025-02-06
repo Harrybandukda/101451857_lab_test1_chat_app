@@ -3,21 +3,28 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors'; 
 import authRoutes from './routes/auth.js';
 import chatRoutes from './routes/chat.js';
 import GroupMessage from './models/GroupMessage.js';
+import User from './models/User.js'; 
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: "*", 
     methods: ["GET", "POST"]
   }
 });
+
+app.use(cors({
+  origin: "*", 
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 // Middleware
 app.use(express.json());
@@ -27,16 +34,23 @@ app.use(express.static('views'));
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 
-// MongoDB Connection with better error handling
+// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('Connected to MongoDB Atlas successfully');
+    return User.findOne({});
+  })
+  .then(user => {
+    if (user) {
+      console.log('Successfully fetched a user from the database');
+    } else {
+      console.log('No users found in the database, but connection is working');
+    }
   })
   .catch((error) => {
     console.error('MongoDB connection error:', error);
   });
 
-// Socket.io handling
 const userRooms = new Map();
 
 io.on('connection', (socket) => {
